@@ -1,3 +1,6 @@
+import initialCards from './scripts/cards';
+import './styles/index.css';
+
 // @todo: Темплейт карточки
 
 const cardTemplate = document.querySelector('#card-template').content;
@@ -23,7 +26,7 @@ function createCard(name, source, deleteCard) {
     
     console.log(cardClone);
     return cardClone;
-}
+}   
 
 // @todo: Функция удаления карточки
 
