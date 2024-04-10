@@ -1,7 +1,6 @@
-import { openCardImageModal } from './modal'
+const cardTemplate = document.querySelector('#card-template').content;
 
-function createCard(name, source, deleteCard) {
-    const cardTemplate = document.querySelector('#card-template').content;
+function createCard(name, source, likeCard, deleteCard, openCardImageModal) {
     const cardClone = cardTemplate.querySelector('.card').cloneNode(true);
 
     const cardLikeButton = cardClone.querySelector('.card__like-button');
@@ -10,24 +9,25 @@ function createCard(name, source, deleteCard) {
     const cardTitle = cardClone.querySelector('.card__title');
 
     cardTitle.textContent = name;
-    cardImg.setAttribute('src', source);
+    cardImg.src = source;
+    cardImg.alt = name;
 
+    cardLikeButton.addEventListener('click', () => likeCard(cardLikeButton));
+    cardButtonDelete.addEventListener('click', () => deleteCard(cardClone));
     cardImg.addEventListener('click', () => openCardImageModal(name, source));
-    cardLikeButton.addEventListener('click', likeCard);
-    cardButtonDelete.addEventListener('click', deleteCard(cardClone));
     
     return cardClone;
-}
+};
 
-function likeCard(evt) {
-    evt.target.classList.toggle('card__like-button_is-active');
-}
+function likeCard(button) {
+    button.classList.toggle('card__like-button_is-active');
+};
 
 function deleteCard(card) {
-    return () => card.remove();
-}
+    card.remove();
+};
 
-export { createCard, deleteCard }
+export { createCard, likeCard, deleteCard }
 
 
 
