@@ -1,10 +1,11 @@
-import './styles/index.css';
-import initialCards from './scripts/cards';
-import { createCard, likeCard, deleteCard } from './scripts/components/card';
-import { openModal, closeModal, handleCloseModalByEsc } from './scripts/components/modal';
+import '../styles/index.css';
+import initialCards from './cards';
+import { createCard, likeCard, deleteCard } from './components/card';
+import { openModal, closeModal, setCloseModalByClickListeners } from './components/modal';
 
 const listOfCards = document.querySelector('.places__list');
 
+const popups = document.querySelectorAll('.popup');
 const popupTypeEdit = document.querySelector('.popup_type_edit');
 const popupTypeAddCard = document.querySelector('.popup_type_new-card');
 const popupTypeImage = document.querySelector('.popup_type_image');
@@ -29,6 +30,8 @@ initialCards.forEach(function (card) {
     const modifiedCard = createCard(card.name, card.link, likeCard, deleteCard, openCardImageModal);
     listOfCards.append(modifiedCard); 
 });
+
+setCloseModalByClickListeners(popups);
 
 function openCardImageModal(name, source) {
     popupImg.src = source;

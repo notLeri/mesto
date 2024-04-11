@@ -14,20 +14,17 @@ function handleCloseModalByEsc(evt) {
     }
 };
 
-const popups = document.querySelectorAll('.popup');
-
 function setCloseModalByClickListeners(popups) {
     popups.forEach(popup => {
         const closeButton = popup.querySelector('.popup__close');
 
         closeButton.addEventListener('click', () => closeModal(popup));
         popup.addEventListener('click', function(evt) {
-            if (evt.target.classList.contains("popup__close") || evt.target.classList.contains("popup")) {
+            if (evt.target.classList.contains("popup")) {
                 closeModal(popup);
             }
         });
     })
 };
-setCloseModalByClickListeners(popups);
 
-export { openModal, closeModal, handleCloseModalByEsc }
+export { openModal, closeModal, setCloseModalByClickListeners }

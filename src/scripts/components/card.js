@@ -1,6 +1,6 @@
 const cardTemplate = document.querySelector('#card-template').content;
 
-function createCard(name, source, likeCard, deleteCard, openCardImageModal) {
+function createCard(name, source, likeCard, deleteCard, onImageClick) {
     const cardClone = cardTemplate.querySelector('.card').cloneNode(true);
 
     const cardLikeButton = cardClone.querySelector('.card__like-button');
@@ -14,7 +14,7 @@ function createCard(name, source, likeCard, deleteCard, openCardImageModal) {
 
     cardLikeButton.addEventListener('click', () => likeCard(cardLikeButton));
     cardButtonDelete.addEventListener('click', () => deleteCard(cardClone));
-    cardImg.addEventListener('click', () => openCardImageModal(name, source));
+    cardImg.addEventListener('click', () => onImageClick(name, source));
     
     return cardClone;
 };
