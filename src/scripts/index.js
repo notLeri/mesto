@@ -1,7 +1,8 @@
 import '../styles/index.css';
-import initialCards from './cards';
 import { createCard, likeCard, deleteCard } from './components/card';
 import { openModal, closeModal, setCloseModalByClickListeners } from './components/modal';
+import { enableValidation, clearValidation } from './components/validation';
+import { getUser, getCards, updateProfile, postNewCard } from './api.js'
 
 const listOfCards = document.querySelector('.places__list');
 
@@ -15,6 +16,7 @@ const popupDescription = document.querySelector('.popup__caption');
 const buttonEditProfile = document.querySelector('.profile__edit-button');
 const buttonAddCard = document.querySelector('.profile__add-button');
 
+const profileImage = document.querySelector('.profile__image');
 const profileName = document.querySelector('.profile__title');
 const profileJob = document.querySelector('.profile__description');
 
@@ -25,11 +27,6 @@ const jobProfileInput = document.querySelector('.popup__input[name=description]'
 const formAddElement = document.querySelector('.popup__form[name=new-place]');
 const nameAddInput = document.querySelector('.popup__input[name=place-name]');
 const linkAddInput = document.querySelector('.popup__input[name=link]');
-
-initialCards.forEach(function (card) {
-    const modifiedCard = createCard(card.name, card.link, likeCard, deleteCard, openCardImageModal);
-    listOfCards.append(modifiedCard); 
-});
 
 setCloseModalByClickListeners(popups);
 
@@ -50,17 +47,64 @@ function handleEditFormSubmit(evt) {
     profileName.textContent = nameProfileInput.value;
     profileJob.textContent = jobProfileInput.value;
     closeModal(popupTypeEdit);
+    updateProfile(nameProfileInput.value, jobProfileInput.value)
 };
 function handleAddFormSubmit(evt) {
+    const card = createCard(nameAddInput.value, linkAddInput.value, 0, cardData._id, likeCard, openCardImageModal, deleteCard);
     evt.preventDefault();
-    const card = createCard(nameAddInput.value, linkAddInput.value, likeCard, deleteCard, openCardImageModal);
     listOfCards.prepend(card); 
     closeModal(popupTypeAddCard);
     formAddElement.reset();
+    // postNewCard(nameAddInput.value, linkAddInput.value)
 };
 
 buttonAddCard.addEventListener('click', () => openModal(popupTypeAddCard));
 buttonEditProfile.addEventListener('click', () => { openModal(popupTypeEdit); updateEditPopup() });
 
 formAddElement.addEventListener('submit', handleAddFormSubmit); 
-formEditElement.addEventListener('submit', handleEditFormSubmit); 
+formEditElement.addEventListener('submit', handleEditFormSubmit);
+
+enableValidation({
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_disabled',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__error_visible'
+})
+
+Promise.all([getUser(), getCards()])
+    .then(results => {
+        const profileData = results[0];
+        const cardsData = results[1];
+        console.log(cardsData)
+
+        profileName.textContent = profileData.name;
+        profileJob.textContent = profileData.about;
+        profileImage.src = profileData.avatar;
+
+        cardsData.forEach(cardData => {
+            let card;
+            if (cardData.owner._id === profileData._id) {
+                card = createCard(cardData.name, cardData.link, cardData.likes.length, cardData._id, likeCard, openCardImageModal, deleteCard);
+            } else {
+                card = createCard(cardData.name, cardData.link, cardData.likes.length, cardData._id, likeCard, openCardImageModal);
+            }
+            listOfCards.append(card);
+        })
+    })
+
+// updateProfile(newName, newDescription)
+//     .then(res => res.json())
+//     .then((result) => {
+//         profileImage.src = result.avatar;
+//         profileName.textContent = result.name;
+//         profileJob.textContent = result.about;
+//     });
+
+
+// postNewCard(newName, newLink)
+//     .then(res => res.json())
+//     .then((result) => {
+//         return console.log(result)
+//     });
