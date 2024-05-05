@@ -1,8 +1,8 @@
 import '../styles/index.css';
-import { createCard, likeCard, deleteCard } from './components/card';
+import { createCard, handlelikeCard, deleteCard } from './components/card';
 import { openModal, closeModal, setCloseModalByClickListeners } from './components/modal';
 import { enableValidation, clearValidation } from './components/validation';
-import { getUser, getCards, updateProfile, postNewCard } from './api.js'
+import { getUser, getCards, updateProfile, postNewCard, reqDeleteCard, reqLike, reqDeleteLike } from './api.js'
 
 const listOfCards = document.querySelector('.places__list');
 
@@ -50,12 +50,12 @@ function handleEditFormSubmit(evt) {
     updateProfile(nameProfileInput.value, jobProfileInput.value)
 };
 function handleAddFormSubmit(evt) {
-    const card = createCard(nameAddInput.value, linkAddInput.value, 0, cardData._id, likeCard, openCardImageModal, deleteCard);
+    const card = createCard(nameAddInput.value, linkAddInput.value, 0, cardData._id, handlelikeCard, openCardImageModal, deleteCard);
     evt.preventDefault();
     listOfCards.prepend(card); 
     closeModal(popupTypeAddCard);
     formAddElement.reset();
-    // postNewCard(nameAddInput.value, linkAddInput.value)
+    postNewCard(nameAddInput.value, linkAddInput.value)
 };
 
 buttonAddCard.addEventListener('click', () => openModal(popupTypeAddCard));
@@ -77,7 +77,6 @@ Promise.all([getUser(), getCards()])
     .then(results => {
         const profileData = results[0];
         const cardsData = results[1];
-        console.log(cardsData)
 
         profileName.textContent = profileData.name;
         profileJob.textContent = profileData.about;
@@ -86,9 +85,9 @@ Promise.all([getUser(), getCards()])
         cardsData.forEach(cardData => {
             let card;
             if (cardData.owner._id === profileData._id) {
-                card = createCard(cardData.name, cardData.link, cardData.likes.length, cardData._id, likeCard, openCardImageModal, deleteCard);
+                card = createCard(cardData.name, cardData.link, cardData.likes.length, cardData._id, handlelikeCard, openCardImageModal, deleteCard);
             } else {
-                card = createCard(cardData.name, cardData.link, cardData.likes.length, cardData._id, likeCard, openCardImageModal);
+                card = createCard(cardData.name, cardData.link, cardData.likes.length, cardData._id, handlelikeCard, openCardImageModal);
             }
             listOfCards.append(card);
         })

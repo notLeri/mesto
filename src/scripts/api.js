@@ -55,25 +55,37 @@ function postNewCard(nameValue, linkvValue) {
     })
 }
 
-function deleteCardOnServer(id) {
+function reqDeleteCard(id) {
     return fetch(`${config.baseUrl}/cards/${id}`, {
         method: 'DELETE',
         headers: config.authoriseHeader,
     })
 }
 
-function likeCardOnServer() {
-    return fetch(`${config.baseUrl}/cards/likes/${id}`, {
+function reqLike(cardId) {
+    return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
         method: 'PUT',
         headers: config.authoriseHeader,
     })
+    .then(res => {
+        if(!res.ok) {
+            throw new Error('Ошибка добавления лайка.');
+        }
+        return res.json();
+    })
 };
 
-function deleteLikeOnServer() {
-    return fetch(`${config.baseUrl}/cards/likes/${id}`, {
+function reqDeleteLike(cardId) {
+    return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
         method: 'DELETE',
         headers: config.authoriseHeader,
     })
+    .then(res => {
+        if(!res.ok) {
+            throw new Error('Ошибка удаления лайка.');
+        }
+        return res.json();
+    })
 }
 
-export { getUser, getCards, updateProfile, postNewCard, deleteCardOnServer }
+export { getUser, getCards, updateProfile, postNewCard, reqDeleteCard, reqLike, reqDeleteLike }

@@ -1,11 +1,11 @@
 import { openModal, closeModal } from "./modal";
-import { deleteCardOnServer } from "../api.js";
+import { reqDeleteCard, reqLike, reqDeleteLike } from "../api.js";
 
 const cardTemplate = document.querySelector('#card-template').content;
 const popupTypeConfirm = document.querySelector('.popup_type_confirm');
 const buttonConfirmDeletion = document.querySelector('.popup__button[name=confirm]');
 
-function createCard(name, source, numberOfLikes, id, likeCard, onImageClick, deleteCard) {
+function createCard(name, source, numberOfLikes, id, handlelikeCard, onImageClick, deleteCard) {
     const cardClone = cardTemplate.querySelector('.card').cloneNode(true);
 
     const cardLikeButton = cardClone.querySelector('.card__like-button');
@@ -29,7 +29,7 @@ function createCard(name, source, numberOfLikes, id, likeCard, onImageClick, del
         });
     }
 
-    cardLikeButton.addEventListener('click', () => likeCard(cardLikeButton));
+    cardLikeButton.addEventListener('click', () => handlelikeCard(cardLikeButton, id));
     cardImg.addEventListener('click', () => onImageClick(name, source));
     
     return cardClone;
@@ -37,7 +37,12 @@ function createCard(name, source, numberOfLikes, id, likeCard, onImageClick, del
 
 buttonConfirmDeletion.addEventListener('click', (evt) => deleteCard(evt.target.dataset.cardId)); 
 
-function likeCard(button) {
+function handlelikeCard(button, cardId) {
+    if (button.classList.contains('card__like-button_is-active')) {
+        reqDeleteLike(cardId);
+    } else {
+        reqLike(cardId);
+    }
     button.classList.toggle('card__like-button_is-active');
 };
 
@@ -46,10 +51,10 @@ function deleteCard(id) {
 
     card.remove();
     closeModal(popupTypeConfirm, card);
-    deleteCardOnServer(id);
+    reqDeleteCard(id);
 };
 
-export { createCard, likeCard, deleteCard }
+export { createCard, handlelikeCard, deleteCard }
 
 
 
