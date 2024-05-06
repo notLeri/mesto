@@ -1,8 +1,8 @@
 import '../styles/index.css';
-import { createCard, handlelikeCard, deleteCard } from './components/card';
+import { createCard, handleLikeCard, deleteCard } from './components/card';
 import { openModal, closeModal, setCloseModalByClickListeners } from './components/modal';
 import { enableValidation, clearValidation } from './components/validation';
-import { getUser, getCards, updateProfile, postNewCard, reqDeleteCard, reqLike, reqDeleteLike } from './api.js'
+import { getUser, getCards, updateProfile, postNewCard, patchProfileAvatar } from './api.js'
 
 const listOfCards = document.querySelector('.places__list');
 
@@ -13,10 +13,11 @@ const popupTypeImage = document.querySelector('.popup_type_image');
 const popupImg = document.querySelector('.popup__image');
 const popupDescription = document.querySelector('.popup__caption');
 
+const buttonEditAvatar = document.querySelector('.profile__image_edit-button');
 const buttonEditProfile = document.querySelector('.profile__edit-button');
 const buttonAddCard = document.querySelector('.profile__add-button');
 
-const profileImage = document.querySelector('.profile__image');
+const profileImage = document.querySelector('.profile__avatar');
 const profileName = document.querySelector('.profile__title');
 const profileJob = document.querySelector('.profile__description');
 
@@ -50,19 +51,25 @@ function handleEditFormSubmit(evt) {
     updateProfile(nameProfileInput.value, jobProfileInput.value)
 };
 function handleAddFormSubmit(evt) {
-    const card = createCard(nameAddInput.value, linkAddInput.value, 0, cardData._id, handlelikeCard, openCardImageModal, deleteCard);
+    console.log(evt)
     evt.preventDefault();
-    listOfCards.prepend(card); 
+    postNewCard(nameAddInput.value, linkAddInput.value)
+        .then((cardData) => {
+            console.log(cardData)
+            const card = createCard(cardData, handleLikeCard, openCardImageModal, deleteCard);
+            listOfCards.prepend(card); 
+        })
     closeModal(popupTypeAddCard);
     formAddElement.reset();
-    postNewCard(nameAddInput.value, linkAddInput.value)
 };
 
-buttonAddCard.addEventListener('click', () => openModal(popupTypeAddCard));
+// buttonEditAvatar.addEventListener('click', handleEditAvatar);
 buttonEditProfile.addEventListener('click', () => { openModal(popupTypeEdit); updateEditPopup() });
+buttonAddCard.addEventListener('click', () => openModal(popupTypeAddCard));
 
 formAddElement.addEventListener('submit', handleAddFormSubmit); 
 formEditElement.addEventListener('submit', handleEditFormSubmit);
+
 
 enableValidation({
     formSelector: '.popup__form',
@@ -77,33 +84,27 @@ Promise.all([getUser(), getCards()])
     .then(results => {
         const profileData = results[0];
         const cardsData = results[1];
+        
+        console.log(profileData)
+        console.log(cardsData)
 
         profileName.textContent = profileData.name;
         profileJob.textContent = profileData.about;
-        profileImage.src = profileData.avatar;
+        profileImage.style.backgroundImage = `url(${profileData.avatar})`;
 
         cardsData.forEach(cardData => {
             let card;
             if (cardData.owner._id === profileData._id) {
-                card = createCard(cardData.name, cardData.link, cardData.likes.length, cardData._id, handlelikeCard, openCardImageModal, deleteCard);
+                card = createCard(cardData, handleLikeCard, openCardImageModal, deleteCard);
             } else {
-                card = createCard(cardData.name, cardData.link, cardData.likes.length, cardData._id, handlelikeCard, openCardImageModal);
+                card = createCard(cardData, handleLikeCard, openCardImageModal);
             }
+            if (cardData.likes.some((person) => {
+                return person._id === profileData._id;
+            })) {
+                card.querySelector('.card__like-button').classList.toggle('card__like-button_is-active')
+            } 
             listOfCards.append(card);
         })
     })
 
-// updateProfile(newName, newDescription)
-//     .then(res => res.json())
-//     .then((result) => {
-//         profileImage.src = result.avatar;
-//         profileName.textContent = result.name;
-//         profileJob.textContent = result.about;
-//     });
-
-
-// postNewCard(newName, newLink)
-//     .then(res => res.json())
-//     .then((result) => {
-//         return console.log(result)
-//     });

@@ -9,15 +9,19 @@ const config = {
     },
 }
 
+function checkResponse(response) {
+    if(!response.ok) {
+        throw new Error(`Ошибка ${response.status}`);
+    }
+    return response.json();
+}
+
 function getUser() {
     return fetch(`${config.baseUrl}/users/me`, {
         headers: config.authoriseHeader,
     })
     .then(res => {
-        if(!res.ok) {
-            throw new Error('Ошибка загрузки профиля с сервера');
-        }
-        return res.json();
+        return checkResponse(res);
     })
 }
 
@@ -26,10 +30,7 @@ function getCards (){
         headers: config.authoriseHeader,
     })
     .then(res => {
-        if(!res.ok) {
-            throw new Error('Ошибка загрузки карточек с сервера');
-        }
-        return res.json();
+        return checkResponse(res);
     })
 }
 
@@ -42,6 +43,9 @@ function updateProfile(newName, newDescription) {
             about: newDescription,
         }),
     })
+    .then(res => {
+        return checkResponse(res);
+    })
 }
 
 function postNewCard(nameValue, linkvValue) {
@@ -53,12 +57,18 @@ function postNewCard(nameValue, linkvValue) {
             link: linkvValue,
         })
     })
+    .then(res => {
+        return checkResponse(res);
+    })
 }
 
 function reqDeleteCard(id) {
     return fetch(`${config.baseUrl}/cards/${id}`, {
         method: 'DELETE',
         headers: config.authoriseHeader,
+    })
+    .then(res => {
+        return checkResponse(res);
     })
 }
 
@@ -68,10 +78,7 @@ function reqLike(cardId) {
         headers: config.authoriseHeader,
     })
     .then(res => {
-        if(!res.ok) {
-            throw new Error('Ошибка добавления лайка.');
-        }
-        return res.json();
+        return checkResponse(res);
     })
 };
 
@@ -81,11 +88,18 @@ function reqDeleteLike(cardId) {
         headers: config.authoriseHeader,
     })
     .then(res => {
-        if(!res.ok) {
-            throw new Error('Ошибка удаления лайка.');
-        }
-        return res.json();
+        return checkResponse(res);
     })
 }
 
-export { getUser, getCards, updateProfile, postNewCard, reqDeleteCard, reqLike, reqDeleteLike }
+function patchProfileAvatar() {
+    return fetch(`${config.baseUrl}/users/me/avatar`, {
+        method: 'PATCH',
+        headers: config.authoriseHeader,
+    })
+    .then(res => {
+        return checkResponse(res);
+    })
+}
+
+export { getUser, getCards, updateProfile, postNewCard, reqDeleteCard, reqLike, reqDeleteLike, patchProfileAvatar }

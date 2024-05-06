@@ -5,7 +5,7 @@ const cardTemplate = document.querySelector('#card-template').content;
 const popupTypeConfirm = document.querySelector('.popup_type_confirm');
 const buttonConfirmDeletion = document.querySelector('.popup__button[name=confirm]');
 
-function createCard(name, source, numberOfLikes, id, handlelikeCard, onImageClick, deleteCard) {
+function createCard(cardData, handlelikeCard, onImageClick, deleteCard) {
     const cardClone = cardTemplate.querySelector('.card').cloneNode(true);
 
     const cardLikeButton = cardClone.querySelector('.card__like-button');
@@ -14,11 +14,11 @@ function createCard(name, source, numberOfLikes, id, handlelikeCard, onImageClic
     const cardTitle = cardClone.querySelector('.card__title');
     const cardLikeQuantity = cardClone.querySelector('.card__like-button-quantity');
 
-    cardTitle.textContent = name;
-    cardImg.src = source;
-    cardImg.alt = name;
-    cardLikeQuantity.textContent = numberOfLikes;
-    cardClone.id = id;
+    cardTitle.textContent = cardData.name;
+    cardImg.src = cardData.link;
+    cardImg.alt = cardData.name;
+    cardLikeQuantity.textContent = cardData.likes.length;
+    cardClone.id = cardData._id;
 
     if (!deleteCard) {
         cardButtonDelete.style.display = 'none';
@@ -29,20 +29,29 @@ function createCard(name, source, numberOfLikes, id, handlelikeCard, onImageClic
         });
     }
 
-    cardLikeButton.addEventListener('click', () => handlelikeCard(cardLikeButton, id));
-    cardImg.addEventListener('click', () => onImageClick(name, source));
+    cardLikeButton.addEventListener('click', () => handlelikeCard(cardLikeButton, cardClone, cardData._id));
+    cardImg.addEventListener('click', () => onImageClick(cardData.name, cardData.link));
     
     return cardClone;
 };
 
 buttonConfirmDeletion.addEventListener('click', (evt) => deleteCard(evt.target.dataset.cardId)); 
 
-function handlelikeCard(button, cardId) {
+function handleLikeCard(button, card, id) {
+    const quantityOfLikes = card.querySelector('.card__like-button-quantity');
+
     if (button.classList.contains('card__like-button_is-active')) {
-        reqDeleteLike(cardId);
+        reqDeleteLike(id)
+            .then((res) => {
+                quantityOfLikes.textContent = res.likes.length;
+            })
     } else {
-        reqLike(cardId);
+        reqLike(id)
+            .then((res) => {
+                quantityOfLikes.textContent = res.likes.length;
+            })
     }
+    
     button.classList.toggle('card__like-button_is-active');
 };
 
@@ -54,7 +63,7 @@ function deleteCard(id) {
     reqDeleteCard(id);
 };
 
-export { createCard, handlelikeCard, deleteCard }
+export { createCard, handleLikeCard, deleteCard }
 
 
 
