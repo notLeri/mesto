@@ -92,7 +92,7 @@ function reqDeleteLike(cardId) {
     })
 }
 
-function patchProfileAvatar(url) {
+function patchAvatar(url) {
     return fetch(`${config.baseUrl}/users/me/avatar`, {
         method: 'PATCH',
         headers: config.headers,
@@ -108,5 +108,5 @@ function patchProfileAvatar(url) {
 export {
     getUser, getCards, updateProfile,
     postNewCard, reqDeleteCard, reqLike,
-    reqDeleteLike, patchProfileAvatar
+    reqDeleteLike, patchAvatar
 }

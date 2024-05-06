@@ -2,7 +2,7 @@ import '../styles/index.css';
 import { createCard, handleLikeCard, deleteCard } from './components/card';
 import { openModal, closeModal, setCloseModalByClickListeners } from './components/modal';
 import { enableValidation } from './components/validation';
-import { getUser, getCards, updateProfile, postNewCard, patchProfileAvatar } from './api.js'
+import { getUser, getCards, updateProfile, postNewCard, patchAvatar } from './api.js'
 
 const listOfCards = document.querySelector('.places__list');
 
@@ -52,7 +52,7 @@ function handleEditAvatarFormSubmit(evt) {
     evt.preventDefault();
     popupButtonSaveAvatar.textContent = 'Сохранение...'
 
-    patchProfileAvatar(linkAvatarInput.value)
+    patchAvatar(linkAvatarInput.value)
     .then(() => {
         profileImage.style.backgroundImage = `url(${linkAvatarInput.value})`;
         closeModal(popupTypeEditAvatar);
