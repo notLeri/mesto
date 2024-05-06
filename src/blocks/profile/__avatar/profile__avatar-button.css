@@ -32,14 +32,18 @@
   background-size: cover;
 }
 
+.profile__avatar-button:active::before {
+  transform: rotate(-10deg);
+}
+
 @media screen and (max-width: 740px) {
-  .profile__image {
+  .profile__avatar-button {
     margin: 0 10px 0 0;
   }
 }
 
 @media screen and (max-width: 480px) {
-  .profile__image {
+  .profile__avatar-button {
     margin-right: 0;
   }
 }

@@ -92,14 +92,21 @@ function reqDeleteLike(cardId) {
     })
 }
 
-function patchProfileAvatar() {
+function patchProfileAvatar(url) {
     return fetch(`${config.baseUrl}/users/me/avatar`, {
         method: 'PATCH',
-        headers: config.authoriseHeader,
+        headers: config.headers,
+        body: JSON.stringify({
+            avatar: url
+        }),
     })
     .then(res => {
         return checkResponse(res);
     })
 }
 
-export { getUser, getCards, updateProfile, postNewCard, reqDeleteCard, reqLike, reqDeleteLike, patchProfileAvatar }
+export {
+    getUser, getCards, updateProfile,
+    postNewCard, reqDeleteCard, reqLike,
+    reqDeleteLike, patchProfileAvatar
+}
