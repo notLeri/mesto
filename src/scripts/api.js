@@ -10,10 +10,10 @@ const config = {
 }
 
 function checkResponse(response) {
-    if(!response.ok) {
-        throw new Error(`Ошибка ${response.status}`);
+    if (response.ok) {
+        return response.json();
     }
-    return response.json();
+    return Promise.reject(`Ошибка: ${response.status}`);
 }
 
 function getUser() {
@@ -48,13 +48,13 @@ function updateProfile(newName, newDescription) {
     })
 }
 
-function postNewCard(nameValue, linkvValue) {
+function postNewCard(nameValue, linkValue) {
     return fetch(`${config.baseUrl}/cards`, {
         method: 'POST',
         headers: config.headers,
         body: JSON.stringify({
             name: nameValue,
-            link: linkvValue,
+            link: linkValue,
         })
     })
     .then(res => {
